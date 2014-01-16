@@ -1,4 +1,4 @@
-import argparse
+from argparse import ArgumentParser
 import socket
 import select
 import struct
@@ -23,7 +23,7 @@ def parse_arguments(args=None):
     """ Provides host, port, and password options for command-line use. The
     RCON API requires a password.
     """
-    parser = argparse.ArgumentParser(description="Connect to a Minecraft RCON server")
+    parser = ArgumentParser(description="Connect to a Minecraft RCON server")
     parser.add_argument("--host", dest="host", type=str, default="127.0.0.1")
     parser.add_argument("--port", dest="port", type=int, default=25575)
     parser.add_argument("--password", dest="password", type=str, required=True)
@@ -101,7 +101,6 @@ def cli(client):
         # read a command and quit if requested
         command = raw_input("rcon> ")
         if command in ["quit", "q"]:
-            print "Disconnecting."
             return
 
         # send the command to the rcon server
@@ -135,10 +134,10 @@ def main(args=None):
     try:
         cli(client)
     except KeyboardInterrupt, k:
-        print "\nDisconnected."
-        exit(0)
+        print
     finally:
         client.close()
+        print "Disconnected."
 
 if __name__ == "__main__":
     main()
