@@ -10,14 +10,16 @@ class MessageTypes(object):
     RCON_AUTHENTICATE = 3
     RCON_AUTH_RESPONSE = 2
     RCON_EXEC_COMMAND = 2
-    RCON_RESPONSEVALUE = 0
+    RCON_RESPONSE_VALUE = 0
 
 
 def parse_arguments(args=None):
     """ Accepts arguments for host, port, and password. Sets defaults for
     host and port. Note that a password is required for RCON.
     """
-    parser = argparse.ArgumentParser(description="Connect to a Minecraft RCON server")
+    parser = argparse.ArgumentParser(
+        description="Connect to a Minecraft RCON server"
+    )
     parser.add_argument("--host", dest="host", default="127.0.0.1")
     parser.add_argument("--port", dest="port", default=25575)
     parser.add_argument("--password", dest="password", default="")
@@ -29,17 +31,17 @@ def create_packet(message, message_type):
     """
     header = struct.pack(
         "<iii",  # format: little-endian byte order, three integers
-        10 + len(message),  # message length
+        len(message) + 10,  # padded message length
         0,  # message id
         message_type
     )
-    return header + message + "\x00\x00"
+    return header + message + "\x00\x00"  # end with two null bytes
 
 
 def process_response(client, response="", data_remains=True):
     """ Reads output from the client socket and formats it into a string.
     """
-    response_len, response_id, response_type = struct.unpack(
+    response_length, response_id, response_type = struct.unpack(
         "<iii",  # same packet structure as before
         client.recv(12)  # read three 4-byte integers
     )
@@ -49,11 +51,11 @@ def process_response(client, response="", data_remains=True):
     # data_remains will be an empty list and the loop will end.
     while data_remains:
 
-        # continue reading, but don't re-read the extra fields
-        # to be quite honest i don't fully understand this
-        response_data = client.recv(response_len - 8)
+        # continue reading, but don't re-read the message id or type
+        response_data = client.recv(response_length - 8)
 
         # add the fragment to our response output
+        # strip the null bytes off each fragment
         response += response_data.strip("\x00\x00")
 
         # check the client socket for reading
@@ -77,7 +79,7 @@ def interact(client):
         command = raw_input("rcon> ")
         packet = create_packet(
             command,
-            MessageTypes.RCON_EXEC_COMMAND,
+            MessageTypes.RCON_EXEC_COMMAND
         )
         client.send(packet)
 
@@ -104,7 +106,7 @@ def main(args=None):
     # authenticate
     auth_packet = create_packet(
         options.password,
-        MessageTypes.RCON_AUTHENTICATE,
+        MessageTypes.RCON_AUTHENTICATE
     )
     client.send(auth_packet)
     print "Connecting to %s:%d. Press Ctrl-C to exit." % (
