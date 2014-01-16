@@ -3,6 +3,12 @@ import socket
 import select
 import struct
 
+"""
+Minecraft RCON Client API/Console
+
+Based on implementation details from http://wiki.vg/Rcon
+"""
+
 
 class MessageTypes(object):
     """ Message types used by the RCON API. Only used when sending data at the
@@ -11,7 +17,6 @@ class MessageTypes(object):
     RCON_AUTHENTICATE = 3
     RCON_AUTH_RESPONSE = 2
     RCON_EXEC_COMMAND = 2
-    RCON_RESPONSE_VALUE = 0
 
 
 def parse_arguments(args=None):
@@ -33,8 +38,6 @@ def create_packet(message, message_type):
         Padded message length (int)
         Message ID (int)
         Message type (int)
-
-    Based on implementation details from http://wiki.vg/Rcon#Packet_Format
     """
     header = struct.pack(
         "<iii",  # format: little-endian byte order, three integers
@@ -78,8 +81,6 @@ def authenticate(client, password):
     response for a matching message ID. A message ID of -1 indicates
     authentication failure, and a matching message ID (0 in our case)
     indicates success.
-
-    Based on implementation details from http://wiki.vg/Rcon#3:_Login
     """
     auth_packet = create_packet(
         password,
