@@ -3,7 +3,7 @@ minecraft_tools
 
 Tools for managing Minecraft servers.
 
-* rcon_api.py: A fully-featured RCON client API
+* api/rcon.py: A fully-featured RCON client API
 * rcon_shell.py: An interactive console shell for the client API
 
 Command-line options:
@@ -29,8 +29,7 @@ Sample usage:
       
     rcon> say hello
     rcon> help 
-    --- Showing help page 1 of 7 (
-    /help <page>) ---
+    --- Showing help page 1 of 7 (/help <page>) ---
     /achievement give <stat_name> [player]
     /ban <name> [reason ...]
     /ban-ip <address|name> [reason ...]
