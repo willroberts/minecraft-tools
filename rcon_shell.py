@@ -32,7 +32,7 @@ def rcon_shell(rcon):
     response, and returns the output to the user. Allows quitting with "quit"
     or "q", and adds newlines to help page output to improve readability.
 
-    @param rcon: Instance of rcon.api.RemoteConsole()
+    @param rcon: Instance of api.rcon.RemoteConsole()
     """
     print "\n  Welcome to the rcon shell. Enter commands here to send them"
     print "  to the RCON server. To quit, type \"quit\" or \"q\".\n"
