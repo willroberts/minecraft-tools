@@ -15,10 +15,10 @@ Command-line options:
     
     optional arguments:
       -h, --help           show this help message and exit
-      --host HOST
-      --port PORT
-      --password PASSWORD
-    
+      --host HOST          default: 127.0.0.1
+      --port PORT          default: 25575
+      --password PASSWORD  required
+
 Sample usage:
 
     $ python rcon_shell.py --password xxxxxx
