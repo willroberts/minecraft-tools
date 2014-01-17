@@ -111,9 +111,9 @@ def cli(client):
 
 def main(args=None):
     options = parse_arguments(args)
-    print "Connecting to %s:%d..." % (options.host, options.port)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
+        print "Connecting to %s:%d..." % (options.host, options.port)
         client.connect((options.host, options.port))
         if authenticate(client, options.password) == 0:
             print "Authenticated."
