@@ -28,3 +28,5 @@ Tools for managing Minecraft servers.
     /defaultgamemode <mode>
     rcon> quit
     Disconnected.
+
+Web interface coming soon.
