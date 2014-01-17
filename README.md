@@ -6,9 +6,13 @@ Tools for managing Minecraft servers.
 * rcon_api.py: A fully-featured RCON client API
 * rcon_shell.py: An interactive console shell for the client API
 
+Command-line options:
 
     $ python rcon_shell.py 
     usage: rcon_shell.py [-h] [--host HOST] [--port PORT] --password PASSWORD
+    
+Sample usage:
+
     $ python rcon_shell.py --password xxxxxx
     Connecting to 127.0.0.1:25575...
       
@@ -28,3 +32,5 @@ Tools for managing Minecraft servers.
     /defaultgamemode <mode>
     rcon> quit
     Disconnected.
+
+------
