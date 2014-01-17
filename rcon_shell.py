@@ -1,5 +1,6 @@
 from api.rcon import *
 from argparse import ArgumentParser
+from getpass import getpass
 
 """
 Minecraft RCON Client Console
@@ -7,8 +8,7 @@ Minecraft RCON Client Console
 
 
 def parse_arguments():
-    """ Provides host, port, and password options for command-line use.
-    The RCON API always requires a password to connect.
+    """ Provides host and port options for command-line use.
 
     @return: options namespace based on provided arguments
     """
@@ -23,11 +23,6 @@ def parse_arguments():
         type=int,
         default=25575,
         help="default: 25575"
-    )
-    parser.add_argument(
-        "--password",
-        required=True,
-        help="required"
     )
     return parser.parse_args()
 
@@ -60,11 +55,12 @@ def main():
     options = parse_arguments()
     rcon = None
     print "Connecting to %s:%d..." % (options.host, options.port)
+    password = getpass()
     try:
         rcon = RemoteConsole(
             options.host,
             options.port,
-            options.password
+            password
         )
         rcon_shell(rcon)
     except ConnectionError:
