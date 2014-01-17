@@ -1,7 +1,8 @@
-from argparse import ArgumentParser
-import socket
 import select
+import socket
 import struct
+
+from argparse import ArgumentParser
 
 """
 Minecraft RCON Client API/Console
@@ -30,22 +31,24 @@ def parse_arguments(args=None):
     return parser.parse_args()
 
 
-def create_packet(message, message_type):
-    """ Creates a packed header struct based on the message parameters,
-    and returns the combined header, message, and null byte padding.
+def process_command(client, command, message_type):
+    """ Creates a packed header struct based on the command parameters,
+    and sends the combined header, command, and null byte padding to the RCON
+    server.
 
     Header Struct (little-endian):
-        Padded message length (int)
+        Padded command length (int)
         Message ID (int)
         Message type (int)
     """
     header = struct.pack(
-        "<iii",  # format: little-endian byte order, three integers
-        len(message) + 10,  # padded message length
-        0,  # message id
+        "<iii",
+        len(command) + 10,
+        0,
         message_type
     )
-    return header + message + "\x00\x00"  # end with two null bytes
+    packet = header + command + "\x00\x00"
+    client.send(packet)
 
 
 def process_response(client):
@@ -82,11 +85,7 @@ def authenticate(client, password):
     authentication failure, and a matching message ID (0 in our case)
     indicates success.
     """
-    auth_packet = create_packet(
-        password,
-        MessageTypes.RCON_AUTHENTICATE
-    )
-    client.send(auth_packet)
+    process_command(client, password, MessageTypes.RCON_AUTHENTICATE)
     response, response_id = process_response(client)
     return response_id
 
@@ -97,23 +96,12 @@ def cli(client):
     or "q", and adds newlines to help page output to improve readability.
     """
     while True:
-
-        # read a command and quit if requested
         command = raw_input("rcon> ")
         if command in ["quit", "q"]:
             return
-
-        # send the command to the rcon server
-        packet = create_packet(
-            command,
-            MessageTypes.RCON_EXEC_COMMAND
-        )
-        client.send(packet)
-
-        # read and process the response from the server
+        process_command(client, command, MessageTypes.RCON_EXEC_COMMAND)
         response, response_id = process_response(client)
         if response:
-            # add some newlines to help page output for cleanliness
             if command.startswith("help"):
                 response = response.replace("/", "\n/")
             print response
@@ -127,7 +115,7 @@ def main(args=None):
     if authenticate(client, options.password) == 0:
         print "Authenticated."
     else:
-        print "Failed to authenticate."
+        print "Authentication failure."
         exit(1)
     print "\n  Welcome to the rcon shell. Enter commands here to send them"
     print "  to the RCON server. To quit, type \"quit\" or \"q\".\n"
