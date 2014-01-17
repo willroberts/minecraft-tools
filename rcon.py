@@ -21,8 +21,8 @@ class MessageTypes(object):
 
 
 def parse_arguments(args=None):
-    """ Provides host, port, and password options for command-line use. The
-    RCON API requires a password.
+    """ Provides host, port, and password options for command-line use.
+    The RCON API always requires a password to connect.
     """
     parser = ArgumentParser(description="Connect to a Minecraft RCON server")
     parser.add_argument("--host", dest="host", type=str, default="127.0.0.1")
@@ -33,8 +33,8 @@ def parse_arguments(args=None):
 
 def process_command(client, command, message_type):
     """ Creates a packed header struct based on the command parameters,
-    and sends the combined header, command, and null byte padding to the RCON
-    server.
+    and sends the combined header, command, and null byte padding to the
+    RCON server.
 
     Header Struct (little-endian):
         Padded command length (int)
@@ -95,6 +95,8 @@ def cli(client):
     response, and returns the output to the user. Allows quitting with "quit"
     or "q", and adds newlines to help page output to improve readability.
     """
+    print "\n  Welcome to the rcon shell. Enter commands here to send them"
+    print "  to the RCON server. To quit, type \"quit\" or \"q\".\n"
     while True:
         command = raw_input("rcon> ")
         if command in ["quit", "q"]:
@@ -111,15 +113,13 @@ def main(args=None):
     options = parse_arguments(args)
     print "Connecting to %s:%d..." % (options.host, options.port)
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((options.host, options.port))
-    if authenticate(client, options.password) == 0:
-        print "Authenticated."
-    else:
-        print "Authentication failure."
-        exit(1)
-    print "\n  Welcome to the rcon shell. Enter commands here to send them"
-    print "  to the RCON server. To quit, type \"quit\" or \"q\".\n"
     try:
+        client.connect((options.host, options.port))
+        if authenticate(client, options.password) == 0:
+            print "Authenticated."
+        else:
+            print "Authentication failure."
+            return
         cli(client)
     except KeyboardInterrupt, k:
         print
