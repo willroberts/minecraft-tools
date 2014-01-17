@@ -8,8 +8,16 @@ Tools for managing Minecraft servers.
 
 Command-line options:
 
-    $ python rcon_shell.py 
+    $ python rcon_shell.py -h
     usage: rcon_shell.py [-h] [--host HOST] [--port PORT] --password PASSWORD
+    
+    Connect to a Minecraft RCON server
+    
+    optional arguments:
+      -h, --help           show this help message and exit
+      --host HOST
+      --port PORT
+      --password PASSWORD
     
 Sample usage:
 
@@ -33,4 +41,3 @@ Sample usage:
     rcon> quit
     Disconnected.
 
-------
