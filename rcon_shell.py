@@ -13,9 +13,22 @@ def parse_arguments():
     @return: options namespace based on provided arguments
     """
     parser = ArgumentParser(description="Connect to a Minecraft RCON server")
-    parser.add_argument("--host", dest="host", type=str, default="127.0.0.1")
-    parser.add_argument("--port", dest="port", type=int, default=25575)
-    parser.add_argument("--password", dest="password", type=str, required=True)
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="default: 127.0.0.1"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=25575,
+        help="default: 25575"
+    )
+    parser.add_argument(
+        "--password",
+        required=True,
+        help="required"
+    )
     return parser.parse_args()
 
 
