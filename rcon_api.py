@@ -20,15 +20,32 @@ class MessageTypes(object):
 
 
 class ConnectionError(Exception):
+    """ Occurs when the client socket fails to connect to the listening RCON
+    server.
+    """
     pass
 
 
 class AuthenticationError(Exception):
+    """ Occurs when the wrong password is provided to an RCON server.
+    """
     pass
 
 
 class RemoteConsole(object):
+    """ The core piece of rcon_api. Connects to a requested server and
+    authenticates, then allows commands to be sent with send(). Can also close
+    its client socket with disconnect().
+    """
+
     def __init__(self, host, port, password):
+        """ Sets up our RemoteConsole, creates the socket, connects to the
+        RCON API, and authenticates.
+
+        @param host: Address of the Minecraft server (default: 127.0.0.1)
+        @param port: Port RCON is running on (default: 25575)
+        @param password: RCON password for the server (required)
+        """
         self.host = host
         self.port = port
         self.password = password
@@ -54,9 +71,8 @@ class RemoteConsole(object):
             Message type (int)
 
         Reads the header from the client socket, then streams data until
-        no data is left to be read from the socket. The header struct has the
-        same format as in process_command(), so we read 12 bytes at a time (to
-        receive three 4-byte integers).
+        no data is left to be read from the socket. We read 12 bytes at a time
+        to receive three 4-byte integers.
 
         The read loop uses select() to check the client socket for remaining
         data. The client socket is passed in for a readability check, and the
@@ -66,6 +82,10 @@ class RemoteConsole(object):
         In this loop, we read from the socket until all data has been received,
         then combine the response and return it along with the response ID,
         which allows us to verify authentication attempts.
+
+        @param command: RCON command to send to the server (e.g. "say hi")
+        @param authenticate: Set to True to use the auth message type
+        @return: response text (str), message ID (int)
         """
         response = ""
         data_remains = True
@@ -96,9 +116,13 @@ class RemoteConsole(object):
         response for a matching message ID. A message ID of -1 indicates
         authentication failure, and a matching message ID (0 in our case)
         indicates success.
+
+        @return: True or False based on authentication success/failure
         """
         response, response_id = self.send(self.password, authenticate=True)
         return response_id == 0
 
     def disconnect(self):
+        """ Close the client socket if connected to the RCON server.
+        """
         self.client.close()
