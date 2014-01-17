@@ -33,7 +33,7 @@ class AuthenticationError(Exception):
 
 
 class RemoteConsole(object):
-    """ The core piece of rcon_api. Connects to a requested server and
+    """ The core piece of api.rcon. Connects to a requested server and
     authenticates, then allows commands to be sent with send(). Can also close
     its client socket with disconnect().
     """
