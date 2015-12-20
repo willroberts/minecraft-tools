@@ -1,12 +1,19 @@
-minecraft_tools
-===============
+# minecraft-tools
 
 Tools for managing Minecraft servers.
+
+## Requirements
+
+* Python 2.7 or 3.x
+
+If you are using Python 2.6, you may need to install `argparse` via `pip`.
+
+## Files
 
 * api/rcon.py: A fully-featured RCON client API
 * rcon_shell.py: An interactive console shell for the client API
 
-Command-line options:
+## Command-line options
 
     $ python rcon_shell.py -h
     usage: rcon_shell.py [-h] [--host HOST] [--port PORT]
@@ -18,7 +25,7 @@ Command-line options:
       --host HOST  default: 127.0.0.1
       --port PORT  default: 25575
 
-Sample usage:
+## Sample usage
 
     $ python rcon_shell.py --host minecraft.example.net
     Connecting to minecraft.example.net:25575...
@@ -42,7 +49,8 @@ Sample usage:
     rcon> quit
     Disconnected.
 
-Warning: The Minecraft RCON server API expects passwords in plaintext, so your
-         password will not be encrypted before being sent across the network.
-         If you would like to keep your RCON password secure, consider using
-         an SSH tunnel.
+## Plaintext Passwords Warning
+
+The Minecraft RCON server API expects passwords in plaintext, so your password
+will not be encrypted before being sent across the network. If you would like
+to keep your RCON password secure, consider using an SSH tunnel.
