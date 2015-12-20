@@ -35,7 +35,6 @@ class RemoteConsole(object):
     authenticates, then allows commands to be sent with send(). Can also close
     its client socket with disconnect().
     '''
-
     def __init__(self, host, port, password):
         '''Sets up our RemoteConsole, creates the socket, connects to the
         RCON API, and authenticates.
@@ -85,23 +84,29 @@ class RemoteConsole(object):
         @param authenticate: Set to True to use the auth message type
         @return: response text (str), message ID (int)
         '''
-        response = ''
+        response = str()
         data_remains = True
 
-        # send the command
+        # Determine the message type
+        if authenticate:
+            message_type = MessageTypes.RCON_AUTHENTICATE
+        else:
+            message_type = MessageTypes.RCON_EXEC_COMMAND
+
+        # Send the command
         header = struct.pack(
             '<iii',
             len(command) + 10,
             0,
-            MessageTypes.RCON_AUTHENTICATE if authenticate is True
-            else MessageTypes.RCON_EXEC_COMMAND
+            message_type,
         )
-        self.client.send(header + command + '\x00\x00')
+        message = '{}{}\x00\x00'.format(header, command)
+        self.client.send(message)
 
-        # return the response
+        # Return the response
         response_length, response_id, response_type = struct.unpack(
             '<iii',
-            self.client.recv(12)
+            self.client.recv(12),
         )
         while data_remains:
             response_fragment = self.client.recv(response_length - 8)
@@ -117,7 +122,7 @@ class RemoteConsole(object):
 
         @return: True or False based on authentication success/failure
         '''
-        response, response_id = self.send(self.password, authenticate=True)
+        _, response_id = self.send(self.password, authenticate=True)
         return response_id == 0
 
     def disconnect(self):
