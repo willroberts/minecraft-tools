@@ -87,7 +87,7 @@ class RemoteConsole(object):
         @param authenticate: Set to True to use the auth message type
         @return: response text (str), message ID (int)
         """
-        response = ""
+        response = b''
         data_remains = True
 
         # send the command
@@ -98,7 +98,7 @@ class RemoteConsole(object):
             MessageTypes.RCON_AUTHENTICATE if authenticate is True
             else MessageTypes.RCON_EXEC_COMMAND
         )
-        self.client.send(header + command + "\x00\x00")
+        self.client.send(header + command.encode('utf-8') + b"\x00\x00")
 
         # return the response
         response_length, response_id, response_type = struct.unpack(
@@ -107,7 +107,7 @@ class RemoteConsole(object):
         )
         while data_remains:
             response_fragment = self.client.recv(response_length - 8)
-            response += response_fragment.strip("\x00\x00")
+            response += response_fragment.strip(b"\x00\x00")
             data_remains = select.select([self.client], [], [], 1.0)[0]
         return response, response_id
 
