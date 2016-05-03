@@ -1,6 +1,7 @@
-from api.rcon import *
+from api.rcon import RemoteConsole, AuthenticationError, ConnectionError
 from argparse import ArgumentParser
 from getpass import getpass
+import six
 
 """
 Minecraft RCON Client Console
@@ -27,6 +28,18 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def get_input(prompt):
+
+    input_func = None
+
+    if six.PY2:
+        input_func = raw_input
+    else:
+        input_func = input
+
+    return input_func(prompt)
+
+
 def rcon_shell(rcon):
     """ Reads a command from the prompt, sends it to the server, processes the
     response, and returns the output to the user. Allows quitting with "quit"
@@ -34,17 +47,18 @@ def rcon_shell(rcon):
 
     @param rcon: Instance of api.rcon.RemoteConsole()
     """
-    print "\n  Welcome to the rcon shell. Enter commands here to send them"
-    print "  to the RCON server. To quit, type \"quit\" or \"q\".\n"
+    print("\n  Welcome to the rcon shell. Enter commands here to send them")
+    print("  to the RCON server. To quit, type \"quit\" or \"q\".\n")
+
     while True:
-        command = raw_input("rcon> ")
+        command = get_input("rcon> ")
         if command in ["quit", "q"]:
             return
         response, response_id = rcon.send(command)
         if response:
             if command.startswith("help"):
                 response = response.replace("/", "\n/")
-            print response
+            print(response)
 
 
 def main():
@@ -54,7 +68,7 @@ def main():
     """
     options = parse_arguments()
     rcon = None
-    print "Connecting to %s:%d..." % (options.host, options.port)
+    print("Connecting to %s:%d..." % (options.host, options.port))
     password = getpass()
     try:
         rcon = RemoteConsole(
@@ -64,16 +78,16 @@ def main():
         )
         rcon_shell(rcon)
     except ConnectionError:
-        print "Connection failed."
+        print("Connection failed.")
         exit(1)
     except AuthenticationError:
-        print "Authentication failed."
+        print("Authentication failed.")
     except KeyboardInterrupt:
-        print
+        print('')
     finally:
         if rcon:
             rcon.disconnect()
-        print "Disconnected."
+        print("Disconnected.")
 
 if __name__ == "__main__":
     main()
